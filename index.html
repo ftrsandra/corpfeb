@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多個產品類別優惠</title>
+<style>
+  html {
+    background: #f6f6f6;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang HK",
+      "Microsoft JhengHei", "Microsoft YaHei", sans-serif;
+    background: #f6f6f6;
+    margin: 0 auto;
+    padding: 0;
+    line-height: 1.5;
+    width: 100%;
+    max-width: 800px; /* 將整個 HTML 闊度限制為 800px */
+  }
+
+  /* 頂部 Banner 區域樣式 */
+  .top-banner-container {
+    width: 100%;
+    text-align: center;
+    background-color: #fff;
+    padding-bottom: 20px;
+  }
+
+  .top-banner-img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    vertical-align: middle;
+  }
+
+  /* 頂部 Banner 下方的按鈕樣式 */
+  .top-cta-btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 12px 40px;
+    background-color: #004898;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0, 72, 152, 0.3);
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+  }
+
+  .top-cta-btn:hover {
+    background-color: #003a7c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 72, 152, 0.4);
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 95%;
+    margin: 20px auto 40px;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .section-banner {
+    position: relative;
+    width: 100%;
+    padding: 20px 26px;
+    background: linear-gradient(135deg, #004898 0%, #1a6ad1 55%, #4c8ff0 100%);
+    color: #ffffff;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .section-banner-title {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .section-banner::before,
+  .section-banner::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.6) 0, transparent 60%);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .section-banner::before {
+    width: 140px;
+    height: 140px;
+    right: -40px;
+    top: -40px;
+  }
+
+  .section-banner::after {
+    width: 90px;
+    height: 90px;
+    left: -20px;
+    bottom: -30px;
+  }
+
+  .content {
+    padding: 22px 18px 26px;
+  }
+
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
+  .product-card {
+    position: relative;
+    box-sizing: border-box;
+    /* 強制保持每行 3 格 */
+    width: calc((100% - 32px) / 3);
+    background: linear-gradient(135deg, #fffaf6 0%, #fff 70%);
+    border-radius: 18px;
+    border: 1px solid #ffd19c;
+    padding: 18px 16px 16px;
+    box-shadow: 0 8px 20px rgba(255, 153, 51, 0.08);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .product-card:nth-child(1) { animation-delay: 0.1s; }
+  .product-card:nth-child(2) { animation-delay: 0.2s; }
+  .product-card:nth-child(3) { animation-delay: 0.3s; }
+  .product-card:nth-child(4) { animation-delay: 0.4s; }
+  .product-card:nth-child(5) { animation-delay: 0.5s; }
+  .product-card:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(255, 153, 51, 0.15);
+  }
+
+  .product-card::after {
+    content: "";
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at center, #ffe5c7 0, transparent 60%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .product-image {
+    width: 100%;
+    height: 140px;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  .product-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    line-height: 21px;
+    /* 移除固定高度和行數限制，讓標題完整顯示 */
+    word-break: break-word;
+    margin-bottom: 8px;
+  }
+
+  .price-section {
+    /* 將價格推到底部，確保同行卡片高度不同時，按鈕和價格仍能底部對齊 */
+    margin-top: auto;
+    padding-top: 8px;
+  }
+
+  .discount-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: #ff7a00;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: #fff0e0;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .discount-tag .big-num {
+    font-size: 16px;
+    margin-right: 2px;
+    vertical-align: middle;
+  }
+
+  .price-row {
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+
+  .original {
+    color: #888;
+    text-decoration: line-through;
+    margin-right: 8px;
+    font-size: 12px;
+  }
+
+  .promo {
+    color: #ff7a00;
+    font-weight: 800;
+    font-size: 22px;
+  }
+
+  .more-wrapper {
+    margin-top: 28px;
+    text-align: center;
+  }
+
+  .more-link {
+    display: inline-block;
+    padding: 10px 32px;
+    border-radius: 999px;
+    background-color: #ff7a00;
+    color: #ffffff;
+    border: 1px solid #ff7a00;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .more-link:hover {
+    filter: brightness(1.05);
+    background-color: #e66e00;
+  }
+
+  /* 調整小螢幕顯示效果，但保留每行 3 格的設定 */
+  @media (max-width: 850px) {
+    .wrapper {
+      width: 95%;
+      margin: 15px auto 30px;
+    }
+  }
+
+  @media (max-width: 550px) {
+    .section-banner-title {
+      font-size: 20px;
+    }
+    .top-cta-btn {
+      width: 80%;
+      padding: 14px 20px;
+      box-sizing: border-box;
+    }
+    .content {
+      padding: 16px 12px 20px;
+    }
+    .product-card {
+      padding: 12px 10px 10px;
+    }
+    .product-image {
+      height: 90px; /* 在手機上縮小圖片高度，避免卡片過長 */
+    }
+    .product-title {
+      font-size: 12px;
+      line-height: 18px;
+      margin-bottom: 6px;
+    }
+    .promo {
+      font-size: 16px;
+    }
+    .original {
+      font-size: 11px;
+      margin-right: 4px;
+    }
+    .discount-tag {
+      font-size: 11px;
+      padding: 2px 4px;
+    }
+    .discount-tag .big-num {
+      font-size: 14px;
+    }
+    .more-link {
+      font-size: 14px;
+      padding: 10px 24px;
+    }
+    /* 如果螢幕太小，價格欄位改成上下排列避免擠迫 */
+    .price-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- 頂部 Banner 與按鈕 -->
+<div class="top-banner-container">
+  <img class="top-banner-img" src="https://api.fortress.com.hk/medias/202601-corp-page-tc-01.jpg?context=bWFzdGVyfGltYWdlc3w0MTM5NjR8aW1hZ2UvanBlZ3xhREkzTDJnellpOHhNams0TmpjeU5Ua3lORGc1TkM4eU1ESTJNREZmWTI5eWNGOXdZV2RsTFhSalh6QXhMbXB3Wnd8ZjhkNTgyN2ZiOTU2OTFmYTQzZjZhYTEwYTMyYzExMjc2NTk1MWUyZDlmNTI1MzdkMjZhODMxNzhmNTdlYjQ0Zg" alt="Banner" />
+  
+  <a href="https://www.fortress.com.hk/zh-hk/" target="_blank" class="top-cta-btn">立即購買</a>
+</div>
+
+<!-- 1. 智能手機/手錶及配件 -->
+<div class="wrapper">
+  <div class="section-banner">
+    <div class="section-banner-title">智能手機/手錶及配件</div>
+  </div>
+  <div class="content">
+    <div class="product-grid">
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13317226" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13317226-FRONT-zoom.jpg?version=1735573501" alt="WOW Ring 智能戒指">
+        </a>
+        <div class="product-title">WOW Ring 智能戒指</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">67</span>折</div>
+          <div class="price-row"><span class="original">$898</span> <span class="promo">$599</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13589221" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13589221-FRONT-zoom.jpg?version=1735573501" alt="BELKIN BoostCharge行動電源">
+        </a>
+        <div class="product-title">BELKIN BoostCharge行動電源 10K with Integrated Cable</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">60</span>折</div>
+          <div class="price-row"><span class="original">$199</span> <span class="promo">$119</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13521091" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13521091-FRONT-zoom.jpg?version=1735573501" alt="HUAWEI WATCH GT 5">
+        </a>
+        <div class="product-title">HUAWEI WATCH GT 5 46mm 智能穿戴</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">48</span>折</div>
+          <div class="price-row"><span class="original">$2,099</span> <span class="promo">$1,000</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="more-wrapper">
+      <a class="more-link" href="https://www.fortress.com.hk/zh-hk/" target="_blank">即睇更多產品 &gt;</a>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 健康及美容產品 -->
+<div class="wrapper">
+  <div class="section-banner">
+    <div class="section-banner-title">健康及美容產品</div>
+  </div>
+  <div class="content">
+    <div class="product-grid">
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13107384" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13107384-FRONT-zoom.jpg?version=1735573501" alt="PHILIPS Sonicare 9000">
+        </a>
+        <div class="product-title">PHILIPS Sonicare 9000系列 HX9911 聲波震動電動牙刷</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">72</span>折</div>
+          <div class="price-row"><span class="original">$1,388</span> <span class="promo">$989</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13602406" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13602406-FRONT-zoom.jpg?version=1735573501" alt="PANASONIC nanoe®護髮風筒">
+        </a>
+        <div class="product-title">PANASONIC EH-NA9N/H nanoe®護髮風筒</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">76</span>折</div>
+          <div class="price-row"><span class="original">$1,580</span> <span class="promo">$1,188</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13923824" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13923824-FRONT-zoom.jpg?version=1735573501" alt="Medicube Age-R Booster Pro Mini">
+        </a>
+        <div class="product-title">Medicube Age-R Booster Pro Mini</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">53</span>折</div>
+          <div class="price-row"><span class="original">$1,150</span> <span class="promo">$608</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13718476" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13718476-FRONT-zoom.jpg?version=1735573501" alt="DAEWOO SC3 無線直髮夾">
+        </a>
+        <div class="product-title">DAEWOO SC3 無線直髮夾</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">78</span>折</div>
+          <div class="price-row"><span class="original">$438</span> <span class="promo">$338</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/12639282" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-12639282-FRONT-zoom.jpg?version=1735573501" alt="Colgate 高露潔光感白LED藍光美白牙齒套裝">
+        </a>
+        <div class="product-title">Colgate 高露潔光感白LED藍光美白牙齒套裝</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">57</span>折</div>
+          <div class="price-row"><span class="original">$1,034</span> <span class="promo">$589</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/12345364" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-12345364-FRONT-zoom.jpg?version=1735573501" alt="OMRON HEM-7156 智能手臂式血壓計">
+        </a>
+        <div class="product-title">OMRON HEM-7156 智能手臂式血壓計</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">75</span>折</div>
+          <div class="price-row"><span class="original">$798</span> <span class="promo">$598</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="more-wrapper">
+      <a class="more-link" href="https://www.fortress.com.hk/zh-hk/" target="_blank">即睇更多產品 &gt;</a>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 暖冬必備 -->
+<div class="wrapper">
+  <div class="section-banner">
+    <div class="section-banner-title">暖冬必備</div>
+  </div>
+  <div class="content">
+    <div class="product-grid">
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13167336" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13167336-FRONT-zoom.jpg?version=1735573501" alt="GERMAN POOL HTW-330-SC">
+        </a>
+        <div class="product-title">GERMAN POOL HTW-330-SC Smart UVC 移動 浴室換氣暖風機</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">76</span>折</div>
+          <div class="price-row"><span class="original">$1,520</span> <span class="promo">$1,150</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13579496" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13579496-FRONT-zoom.jpg?version=1735573501" alt="Yohome YH-008S">
+        </a>
+        <div class="product-title">Yohome YH-008S (新風版) 立臥式廣角4D搖頭萬用全身速熱 暖風機</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">67</span>折</div>
+          <div class="price-row"><span class="original">$299</span> <span class="promo">$199</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/12545649" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-12545649-FRONT-zoom.jpg?version=1735573501" alt="MIDEA NT20-21A">
+        </a>
+        <div class="product-title">MIDEA NT20-21A 2000W 陶瓷暖風機</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">43</span>折</div>
+          <div class="price-row"><span class="original">$469</span> <span class="promo">$199</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="more-wrapper">
+      <a class="more-link" href="https://www.fortress.com.hk/zh-hk/" target="_blank">即睇更多產品 &gt;</a>
+    </div>
+  </div>
+</div>
+
+<!-- 4. 家庭電器 -->
+<div class="wrapper">
+  <div class="section-banner">
+    <div class="section-banner-title">家庭電器</div>
+  </div>
+  <div class="content">
+    <div class="product-grid">
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13253015" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13253015-FRONT-zoom.jpg?version=1735573501" alt="DYSON Digital Slim Submarine">
+        </a>
+        <div class="product-title">DYSON Digital Slim Submarine 洗地吸塵器</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">75</span>折</div>
+          <div class="price-row"><span class="original">$4,690</span> <span class="promo">$3,480</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13170009" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13170009-FRONT-zoom.jpg?version=1735573501" alt="HITACHI HRTN5198M">
+        </a>
+        <div class="product-title">HITACHI HRTN5198M 日立纖巧變頻環保雙門雪櫃</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">59</span>折</div>
+          <div class="price-row"><span class="original">$3,380</span> <span class="promo">$1,990</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13945601" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13945601-FRONT-zoom.jpg?version=1735573501" alt="TOSHIBA TW-T21BU80UWH">
+        </a>
+        <div class="product-title">TOSHIBA TW-T21BU80UWH(MG) 7公斤超薄身前置式變頻洗衣機</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">60</span>折</div>
+          <div class="price-row"><span class="original">$5,180</span> <span class="promo">$3,089</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="more-wrapper">
+      <a class="more-link" href="https://www.fortress.com.hk/zh-hk/" target="_blank">即睇更多產品 &gt;</a>
+    </div>
+  </div>
+</div>
+
+<!-- 5. 視聽娛樂 -->
+<div class="wrapper">
+  <div class="section-banner">
+    <div class="section-banner-title">視聽娛樂</div>
+  </div>
+  <div class="content">
+    <div class="product-grid">
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/12794469" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-12794469-FRONT-zoom.jpg?version=1735573501" alt="Marshall STANMORE III">
+        </a>
+        <div class="product-title">Marshall STANMORE III 無線音箱</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">78</span>折</div>
+          <div class="price-row"><span class="original">$3,499</span> <span class="promo">$2,699</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13912586" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13912586-FRONT-zoom.jpg?version=1735573501" alt="LG OLED AI B5">
+        </a>
+        <div class="product-title">LG OLED AI B5 4K 智能電視</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">60</span>折</div>
+          <div class="price-row"><span class="original">$21,980</span> <span class="promo">$12,980</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13859341" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13859341-FRONT-zoom.jpg?version=1735573501" alt="TCL C6K Premium QD-MiniLED TV">
+        </a>
+        <div class="product-title">TCL C6K Premium QD-MiniLED TV</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">69</span>折</div>
+          <div class="price-row"><span class="original">$6,980</span> <span class="promo">$4,760</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="more-wrapper">
+      <a class="more-link" href="https://www.fortress.com.hk/zh-hk/" target="_blank">即睇更多產品 &gt;</a>
+    </div>
+  </div>
+</div>
+
+<!-- 6. 旅行用品 -->
+<div class="wrapper">
+  <div class="section-banner">
+    <div class="section-banner-title">旅行用品</div>
+  </div>
+  <div class="content">
+    <div class="product-grid">
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13359194" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13359194-FRONT-zoom.jpg?version=1735573501" alt="Jollying Pebble">
+        </a>
+        <div class="product-title">Jollying Pebble 摺疊式瘦身行李箱</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">72</span>折</div>
+          <div class="price-row"><span class="original">$799</span> <span class="promo">$572</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13240134" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13240134-FRONT-zoom.jpg?version=1735573501" alt="Kica Jet Fan 2">
+        </a>
+        <div class="product-title">Kica Jet Fan 2 渦輪扇</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">76</span>折</div>
+          <div class="price-row"><span class="original">$488</span> <span class="promo">$370</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13589264" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13589264-FRONT-zoom.jpg?version=1735573501" alt="HALLMARK HM904T">
+        </a>
+        <div class="product-title">HALLMARK PC前揭式+中開可擴充行李箱 HM904T</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">32</span>折</div>
+          <div class="price-row"><span class="original">$2,380</span> <span class="promo">$750</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13026795" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13026795-FRONT-zoom.jpg?version=1735573501" alt="Pearson 朗文學習筆">
+        </a>
+        <div class="product-title">Pearson 朗文學習筆 預載朗文英漢詞典 HK01</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">42</span>折</div>
+          <div class="price-row"><span class="original">$1,199</span> <span class="promo">$499</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13195871" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13195871-FRONT-zoom.jpg?version=1735573501" alt="Momax UA8AUKE">
+        </a>
+        <div class="product-title">Momax UA8AUKE 1-World 70W 5-插口 + AC旅行充電插座</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">66</span>折</div>
+          <div class="price-row"><span class="original">$349</span> <span class="promo">$229</span></div>
+        </div>
+      </div>
+      <div class="product-card">
+        <a href="https://www.fortress.com.hk/zh-hk/p/13248427" target="_blank">
+          <img class="product-image" src="https://medias.fortress.com.hk/publishing/FTRHK-13248427-FRONT-zoom.jpg?version=1735573501" alt="Momax UA18">
+        </a>
+        <div class="product-title">Momax UA18 1-World+ 70W GaN 3插口及內置伸縮USB-C充電線旅行插座</div>
+        <div class="price-section">
+          <div class="discount-tag"><span class="big-num">74</span>折</div>
+          <div class="price-row"><span class="original">$339</span> <span class="promo">$249</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="more-wrapper">
+      <a class="more-link" href="https://www.fortress.com.hk/zh-hk/" target="_blank">即睇更多產品 &gt;</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
